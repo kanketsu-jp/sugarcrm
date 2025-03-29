@@ -1,7 +1,3 @@
-# docker rm -f sugarcrm-mysql
-# docker run -d --name sugarcrm-mysql -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=sugarcrm -e MYSQL_USER=sugarcrm -e MYSQL_PASSWORD=123456 mysql
-# docker run -d --name sugarcrm -p 80:80 --link sugarcrm-mysql:mysql mwaeckerlin/sugarcrm
-
 FROM ubuntu:20.04
 LABEL maintainer="mwaeckerlin"
 
@@ -32,13 +28,11 @@ RUN sed -i 's,;*\(date.timezone *=\).*,\1 "'${TIMEZONE}'",g' /etc/php/7.4/apache
 RUN bash -c "chown www-data:www-data crm/{.htaccess,config.php,config_override.php,sugarcrm.log}" && \
     bash -c "chown -R www-data:www-data crm/{cache,custom,data,modules,upload}"
 
-RUN bash -c "cat << 'EOF' > /etc/apache2/conf-available/sugarcrm.conf
-<Directory /sugar/crm>
-  Options Indexes FollowSymLinks
-  AllowOverride All
-  Require all granted
-</Directory>
-EOF"
+RUN echo "<Directory /sugar/crm>" > /etc/apache2/conf-available/sugarcrm.conf && \
+    echo "  Options Indexes FollowSymLinks" >> /etc/apache2/conf-available/sugarcrm.conf && \
+    echo "  AllowOverride All" >> /etc/apache2/conf-available/sugarcrm.conf && \
+    echo "  Require all granted" >> /etc/apache2/conf-available/sugarcrm.conf && \
+    echo "</Directory>" >> /etc/apache2/conf-available/sugarcrm.conf
 
 RUN a2enconf sugarcrm
 
