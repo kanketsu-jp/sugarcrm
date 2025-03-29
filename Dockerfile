@@ -32,11 +32,13 @@ RUN sed -i 's,;*\(date.timezone *=\).*,\1 "'${TIMEZONE}'",g' /etc/php/7.4/apache
 RUN bash -c "chown www-data:www-data crm/{.htaccess,config.php,config_override.php,sugarcrm.log}" && \
     bash -c "chown -R www-data:www-data crm/{cache,custom,data,modules,upload}"
 
-RUN bash -c 'echo "<Directory /sugar/crm>
+RUN bash -c "cat << 'EOF' > /etc/apache2/conf-available/sugarcrm.conf
+<Directory /sugar/crm>
   Options Indexes FollowSymLinks
   AllowOverride All
   Require all granted
-</Directory>" > /etc/apache2/conf-available/sugarcrm.conf'
+</Directory>
+EOF"
 
 RUN a2enconf sugarcrm
 
