@@ -1,6 +1,8 @@
 FROM ubuntu:20.04
 LABEL maintainer="mwaeckerlin"
 
+# Set non-interactive mode for apt-get to avoid tzdata prompt
+ENV DEBIAN_FRONTEND=noninteractive
 EXPOSE 80
 ENV TIMEZONE "Europe/Zurich"
 
@@ -40,7 +42,6 @@ RUN phpenmod curl imap mysql pdo gd json mysqli opcache pdo_mysql
 
 RUN echo '*    *    *    *    *     cd /sugar/crm; php -f cron.php > /dev/null 2>&1' > /etc/cron.d/sugar
 
-CMD sed -i 's,;*\(date.timezone *=\).*,\1 "'${TIMEZONE}'",g' /etc/php/7.4/apache2/php.ini && \
-    cron && apache2ctl -DFOREGROUND
+CMD cron && apache2ctl -DFOREGROUND
 
 VOLUME /sugar
